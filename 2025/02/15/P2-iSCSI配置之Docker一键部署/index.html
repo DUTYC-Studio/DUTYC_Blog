@@ -27,7 +27,7 @@
 <meta property="og:description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-02-15T04:25:45.000Z">
-<meta property="article:modified_time" content="2025-02-15T04:59:49.036Z">
+<meta property="article:modified_time" content="2025-02-15T05:19:14.274Z">
 <meta property="article:author" content="DUTYC Studio">
 <meta property="article:tag" content="Linux NAS Docker">
 <meta name="twitter:card" content="summary_large_image">
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          910 字
+          1.2k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          8 分钟
+          10 分钟
         
       </span>
     
@@ -302,6 +302,17 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 列出可用的 Docker 版本</span><br>yum list docker-ce --showduplicates | <span class="hljs-built_in">sort</span> -r<br><br><span class="hljs-comment"># 使用版本号替换 &lt;VERSION_STRING&gt; 来安装特定版本</span><br><span class="hljs-built_in">sudo</span> yum install docker-ce-&lt;VERSION_STRING&gt; docker-ce-cli-&lt;VERSION_STRING&gt; containerd.io<br></code></pre></td></tr></table></figure>
 
 <ul>
+<li>配置Docker 使用加速器镜像源</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> /etc/docker/<br>vim /etc/docker/daemon.json<br></code></pre></td></tr></table></figure>
+
+<p>​        添加镜像加速地址,注意镜像加速地址可能会失效,测试地址有效后再配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">&#123;<br>    <span class="hljs-string">&quot;registry-mirrors&quot;</span>: [<br>        <span class="hljs-string">&quot;https://docker.xuanyuan.me&quot;</span><br>    ]<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>​       重新加载docker服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl daemon-reload<br><span class="hljs-built_in">sudo</span> systemctl restart docker<br></code></pre></td></tr></table></figure>
+
+<ul>
 <li>启动 Docker 并设置开机自启</li>
 </ul>
 <p>安装完成后，启动 Docker，并将其配置为随系统启动。</p>
@@ -322,7 +333,7 @@
 <ul>
 <li>运行iSCSI容器： 下面的命令将启动一个名为<code>stgt</code>的容器，该容器会作为iSCSI服务端运行，并映射端口3260以允许客户端连接。</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run \<br>  --detach \<br>  --name stgt \<br>  --restart=unless-stopped \<br>  --net host \<br>  --privileged \<br>  --volume /etc/target:/etc/target \<br>  --volume /run/lvm:/run/lvm \<br>  --volume /lib/modules:/lib/modules \<br>  --volume /sys/kernel/config:/sys/kernel/config \<br>  --volume /dev:/dev \<br>  --volume /vol2/1000/iscsi_img:/vol2/1000/iscsi_img(使用自己的img镜像所在的文件路径) \ <br>  -p 3260:3260 \<br>  wtnb75/stgt<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run \<br>  --detach \<br>  --name stgt \<br>  --restart=unless-stopped \<br>  --net host \<br>  --privileged \<br>  --volume /etc/target:/etc/target \<br>  --volume /run/lvm:/run/lvm \<br>  --volume /lib/modules:/lib/modules \<br>  --volume /sys/kernel/config:/sys/kernel/config \<br>  --volume /dev:/dev \<br>  --volume /vol2/1000/iscsi_img:/vol2/1000/iscsi_img(使用自己的img镜像所在的文件目录,并非.img文件的路径) \ <br>  -p 3260:3260 \<br>  wtnb75/stgt<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>创建Target：</li>
@@ -330,14 +341,13 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode target --op new --tid 1 --targetname iqn.2025-02.com.comsys:iscsi.fcdisk(名字自己定)<br></code></pre></td></tr></table></figure>
 
 <ul>
-<li>创建LUN（这里假设你有一个硬盘镜像文件<code>/vol2/1000/iscsi_img/storage.img</code>）：</li>
+<li>创建LUN（这里假设你有一个硬盘镜像文件<code>/vol2/1000/iscsi_img/storage.img</code>,或者一个硬盘分区）：</li>
 </ul>
+<h6 id="方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd命令创建一个："><a href="#方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd命令创建一个：" class="headerlink" title="方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过dd命令创建一个："></a>方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过<code>dd</code>命令创建一个：</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">dd</span> <span class="hljs-keyword">if</span>=/dev/zero of=/vol2/1000/iscsi_img/storage.img bs=1M count=1024   <span class="hljs-comment"># 创建一个1GB大小的镜像文件,记得使用自己的路径</span><br></code></pre></td></tr></table></figure>
+
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
 
-<ul>
-<li>如果没有现成的镜像文件，可以先通过<code>dd</code>命令创建一个：</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">dd</span> <span class="hljs-keyword">if</span>=/dev/zero of=/path/to/your/image.img bs=1M count=1024   <span class="hljs-comment"># 创建一个1GB大小的镜像文件</span><br></code></pre></td></tr></table></figure>
+<h6 id="方式二-使用硬盘分区创建-分区为-dev-adb1-请根据实际情况调整"><a href="#方式二-使用硬盘分区创建-分区为-dev-adb1-请根据实际情况调整" class="headerlink" title="方式二:  使用硬盘分区创建,分区为/dev/adb1,请根据实际情况调整"></a>方式二:  使用硬盘分区创建,分区为<code>/dev/adb1</code>,请根据实际情况调整</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"> <span class="hljs-comment"># 注意ISCSI通过提供块设备（例如硬盘或分区）的方式进行工作,不能直接共享一个文件系统目录</span><br>docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /dev/sdb1<br></code></pre></td></tr></table></figure>
 
 <ul>
 <li>授权： 允许特定网段内的客户端访问iSCSI Target。</li>
@@ -354,6 +364,15 @@
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs bash">[root@learn 1000]# docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode target --op show<br>Target 1: iqn.2017-04.com.comsys:iscsi.fcdisk<br>    System information:<br>        Driver: iscsi<br>        State: ready<br>    I_T nexus information:<br>    LUN information:<br>        LUN: 0<br>            Type: controller<br>            SCSI ID: IET     00010000<br>            SCSI SN: beaf10<br>            Size: 0 MB, Block size: 1<br>            Online: Yes<br>            Removable media: No<br>            Prevent removal: No<br>            Readonly: No<br>            SWP: No<br>            Thin-provisioning: No<br>            Backing store <span class="hljs-built_in">type</span>: null<br>            Backing store path: None<br>            Backing store flags: <br>        LUN: 1<br>            Type: disk<br>            SCSI ID: IET     00010001<br>            SCSI SN: beaf11<br>            Size: 2147 MB, Block size: 512<br>            Online: Yes<br>            Removable media: No<br>            Prevent removal: No<br>            Readonly: No<br>            SWP: No<br>            Thin-provisioning: No<br>            Backing store <span class="hljs-built_in">type</span>: rdwr<br>            Backing store path: /vol2/1000/iscsi_img/storage.img<br>            Backing store flags: <br>    Account information:<br>    ACL information:<br>        192.168.0.105<br></code></pre></td></tr></table></figure>
 
+<ul>
+<li>开放防火墙3260端口</li>
+</ul>
+<p>确保服务器上的防火墙允许iSCSI通信，默认情况下，iSCSI使用3260端口。可以暂时关闭防火墙</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#在CentOS/RHEL系统上： </span><br>systemctl stop firewalld<br></code></pre></td></tr></table></figure>
+
+<p>或者，只开放特定端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">firewall-cmd --zone=public --add-port=3260/tcp --permanent<br>firewall-cmd --reload<br></code></pre></td></tr></table></figure>
+
 <h3 id="3-在客户端（如-Windows-11）挂载-iSCSI-Target"><a href="#3-在客户端（如-Windows-11）挂载-iSCSI-Target" class="headerlink" title="3. 在客户端（如 Windows 11）挂载 iSCSI Target"></a>3. 在客户端（如 Windows 11）挂载 iSCSI Target</h3><ul>
 <li><p><strong>在 Windows 中使用 iSCSI Initiator 连接到服务器上的 iSCSI Target</strong>。#具体参考csdn文章</p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/beck_li/article/details/139669146">配置Windows客户端连接iSCSI设备_windows 连接iscsi-CSDN博客</a></p>
@@ -367,7 +386,7 @@
 <h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h3><blockquote>
 <p>[!NOTE]</p>
 <p>以上步骤详细描述了如何在 Linux (NAS)上安装docker部署 iSCSI Target。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
-<p>邮箱:<a href="mailto:&#x64;&#x75;&#x74;&#121;&#x63;&#46;&#x73;&#116;&#117;&#100;&#x69;&#x6f;&#x40;&#x71;&#x71;&#46;&#x63;&#111;&#x6d;">&#x64;&#x75;&#x74;&#121;&#x63;&#46;&#x73;&#116;&#117;&#100;&#x69;&#x6f;&#x40;&#x71;&#x71;&#46;&#x63;&#111;&#x6d;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+<p>邮箱:<a href="mailto:&#x64;&#x75;&#116;&#x79;&#x63;&#46;&#x73;&#x74;&#x75;&#100;&#x69;&#111;&#64;&#x71;&#x71;&#x2e;&#x63;&#x6f;&#x6d;">&#x64;&#x75;&#116;&#x79;&#x63;&#46;&#x73;&#x74;&#x75;&#100;&#x69;&#111;&#64;&#x71;&#x71;&#x2e;&#x63;&#x6f;&#x6d;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
 </blockquote>
 
                 
