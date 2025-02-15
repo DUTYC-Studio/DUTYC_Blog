@@ -27,7 +27,7 @@
 <meta property="og:description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-02-15T04:25:45.000Z">
-<meta property="article:modified_time" content="2025-02-15T06:05:50.596Z">
+<meta property="article:modified_time" content="2025-02-15T08:16:05.908Z">
 <meta property="article:author" content="DUTYC Studio">
 <meta property="article:tag" content="Linux NAS Docker">
 <meta name="twitter:card" content="summary_large_image">
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          1.8k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          14 分钟
+          15 分钟
         
       </span>
     
@@ -341,11 +341,11 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode target --op new --tid 1 --targetname iqn.2025-02.com.comsys:iscsi.fcdisk(名字自己定)<br></code></pre></td></tr></table></figure>
 
 <ul>
-<li>创建LUN（这里假设你有一个硬盘镜像文件<code>/vol2/1000/iscsi_img/storage.img</code>,或者一个硬盘分区）：</li>
+<li><strong>创建LUN</strong>（这里假设你有一个硬盘镜像文件<code>/vol2/1000/iscsi_img/storage.img</code>,或者一个硬盘分区）：</li>
 </ul>
-<h6 id="方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd命令创建一个："><a href="#方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd命令创建一个：" class="headerlink" title="方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过dd命令创建一个："></a>方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过<code>dd</code>命令创建一个：</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">dd</span> <span class="hljs-keyword">if</span>=/dev/zero of=/vol2/1000/iscsi_img/storage.img bs=1M count=1024   <span class="hljs-comment"># 创建一个1GB大小的镜像文件,记得使用自己的路径</span><br></code></pre></td></tr></table></figure>
+<h6 id="方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd或者truncate命令创建一个："><a href="#方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd或者truncate命令创建一个：" class="headerlink" title="方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过dd或者truncate命令创建一个："></a>方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过<code>dd</code>或者<code>truncate</code>命令创建一个：</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#使用dd命令创建</span><br><span class="hljs-built_in">dd</span> <span class="hljs-keyword">if</span>=/dev/zero of=/vol2/1000/iscsi_img/storage.img bs=1M count=1024   <span class="hljs-comment"># 创建一个1GB大小的镜像文件,记得使用自己的路径</span><br><span class="hljs-comment">#或者使用truncate 命令,truncate 命令不会立即分配实际的磁盘空间，而是通过稀疏文件的方式标记文件大小，这意味着文件的实际占用空间会随着数据写入而逐渐增加</span><br><span class="hljs-built_in">truncate</span> -s 2G /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#创建LUN</span><br>docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
 
 <blockquote>
 <p>[!NOTE]</p>
@@ -416,7 +416,7 @@
 <h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h3><blockquote>
 <p>[!NOTE]</p>
 <p>以上步骤详细描述了如何在 Linux (NAS)上安装docker部署 iSCSI Target。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
-<p>邮箱:<a href="mailto:&#100;&#117;&#x74;&#121;&#x63;&#x2e;&#x73;&#x74;&#x75;&#100;&#x69;&#111;&#x40;&#113;&#x71;&#x2e;&#x63;&#111;&#109;">&#100;&#117;&#x74;&#121;&#x63;&#x2e;&#x73;&#x74;&#x75;&#100;&#x69;&#111;&#x40;&#113;&#x71;&#x2e;&#x63;&#111;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+<p>邮箱:<a href="mailto:&#100;&#117;&#116;&#121;&#x63;&#46;&#115;&#116;&#117;&#x64;&#x69;&#x6f;&#x40;&#113;&#113;&#46;&#x63;&#111;&#109;">&#100;&#117;&#116;&#121;&#x63;&#46;&#115;&#116;&#117;&#x64;&#x69;&#x6f;&#x40;&#113;&#113;&#46;&#x63;&#111;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
 </blockquote>
 
                 
