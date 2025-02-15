@@ -19,15 +19,15 @@
   <meta name="author" content="DUTYC Studio">
   <meta name="keywords" content="">
   
-    <meta name="description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  [P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘](P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客) ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战">
+    <meta name="description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="P2_iSCSI配置之Docker一键部署">
 <meta property="og:url" content="http://example.com/2025/02/15/P2-iSCSI%E9%85%8D%E7%BD%AE%E4%B9%8BDocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/index.html">
 <meta property="og:site_name" content="DUTYC博客">
-<meta property="og:description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  [P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘](P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客) ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战">
+<meta property="og:description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-02-15T04:25:45.000Z">
-<meta property="article:modified_time" content="2025-02-15T04:53:57.691Z">
+<meta property="article:modified_time" content="2025-02-15T04:55:56.486Z">
 <meta property="article:author" content="DUTYC Studio">
 <meta property="article:tag" content="Linux NAS Docker">
 <meta name="twitter:card" content="summary_large_image">
@@ -278,7 +278,7 @@
                 
                 <h1 id="P2-iSCSI配置之Docker一键部署"><a href="#P2-iSCSI配置之Docker一键部署" class="headerlink" title="P2_iSCSI配置之Docker一键部署"></a>P2_iSCSI配置之Docker一键部署</h1><blockquote>
 <p>[!NOTE]</p>
-<p>书接上回  [P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘](<a target="_blank" rel="noopener" href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a>) ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44486757/article/details/126694464?spm=5176.28103460.0.0.297c5d27OF8hTd">Docker实战-ISCSI_docker iscsi-CSDN博客</a></p>
+<p>书接上回  <a target="_blank" rel="noopener" href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44486757/article/details/126694464?spm=5176.28103460.0.0.297c5d27OF8hTd">Docker实战-ISCSI_docker iscsi-CSDN博客</a></p>
 </blockquote>
 <h3 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1.环境准备"></a>1.环境准备</h3><h4 id="1-1安装docker"><a href="#1-1安装docker" class="headerlink" title="1.1安装docker"></a>1.1安装docker</h4><ul>
 <li>更新系统软件包</li>
@@ -421,7 +421,7 @@
 <h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h3><blockquote>
 <p>[!NOTE]</p>
 <p>以上步骤详细描述了如何在 Linux 服务器(NAS)上安装docker部署 iSCSI Target、以及在客户端挂载Target。同时也包含了如何在服务端查看通过 iSCSI 挂载的卷中的文件。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
-<p>邮箱:<a href="mailto:&#x64;&#x75;&#x74;&#x79;&#99;&#x2e;&#115;&#116;&#x75;&#100;&#105;&#x6f;&#64;&#113;&#113;&#x2e;&#x63;&#x6f;&#109;">&#x64;&#x75;&#x74;&#x79;&#99;&#x2e;&#115;&#116;&#x75;&#100;&#105;&#x6f;&#64;&#113;&#113;&#x2e;&#x63;&#x6f;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+<p>邮箱:<a href="mailto:&#100;&#117;&#116;&#x79;&#x63;&#46;&#x73;&#116;&#117;&#x64;&#x69;&#111;&#x40;&#113;&#x71;&#46;&#99;&#111;&#109;">&#100;&#117;&#116;&#x79;&#x63;&#46;&#x73;&#116;&#117;&#x64;&#x69;&#111;&#x40;&#113;&#x71;&#46;&#99;&#111;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
 </blockquote>
 
                 
