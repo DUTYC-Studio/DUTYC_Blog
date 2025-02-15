@@ -27,7 +27,7 @@
 <meta property="og:description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-02-15T04:25:45.000Z">
-<meta property="article:modified_time" content="2025-02-15T05:19:14.274Z">
+<meta property="article:modified_time" content="2025-02-15T05:29:26.658Z">
 <meta property="article:author" content="DUTYC Studio">
 <meta property="article:tag" content="Linux NAS Docker">
 <meta name="twitter:card" content="summary_large_image">
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          1.7k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          10 分钟
+          14 分钟
         
       </span>
     
@@ -347,6 +347,10 @@
 
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
 
+<blockquote>
+<p>[!NOTE]</p>
+<p>可以后期增加 <code>.img</code> 文件的大小,详情请见文章末尾</p>
+</blockquote>
 <h6 id="方式二-使用硬盘分区创建-分区为-dev-adb1-请根据实际情况调整"><a href="#方式二-使用硬盘分区创建-分区为-dev-adb1-请根据实际情况调整" class="headerlink" title="方式二:  使用硬盘分区创建,分区为/dev/adb1,请根据实际情况调整"></a>方式二:  使用硬盘分区创建,分区为<code>/dev/adb1</code>,请根据实际情况调整</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"> <span class="hljs-comment"># 注意ISCSI通过提供块设备（例如硬盘或分区）的方式进行工作,不能直接共享一个文件系统目录</span><br>docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /dev/sdb1<br></code></pre></td></tr></table></figure>
 
 <ul>
@@ -383,10 +387,36 @@
 </li>
 </ul>
 <h3 id="4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件"><a href="#4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件" class="headerlink" title="4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件"></a>4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件</h3><p>参考 <a target="_blank" rel="noopener" href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> 第5章节</p>
-<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h3><blockquote>
+<h3 id="5-后期调整-img文件的大小"><a href="#5-后期调整-img文件的大小" class="headerlink" title="5.后期调整.img文件的大小"></a>5.后期调整.img文件的大小</h3><blockquote>
+<p>[!IMPORTANT]</p>
+<p>最好在一个非生产环境中测试整个过程，以避免意外的数据丢失或其他问题。</p>
+</blockquote>
+<h3 id="步骤-1-增加-img-文件的大小"><a href="#步骤-1-增加-img-文件的大小" class="headerlink" title="步骤 1: 增加 .img 文件的大小"></a>步骤 1: 增加 <code>.img</code> 文件的大小</h3><p>首先，增加 <code>.img</code> 文件的物理大小。假设想将其扩展到 50GB：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">truncate</span> -s 50G /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<p>或使用 <code>dd</code>（实际分配空间）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">dd</span> <span class="hljs-keyword">if</span>=/dev/zero bs=1M count=0 seek=50G of=/vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<h3 id="加载-img-文件为循环设备"><a href="#加载-img-文件为循环设备" class="headerlink" title="加载 .img 文件为循环设备"></a>加载 <code>.img</code> 文件为循环设备</h3><p>接下来，将 <code>.img</code> 文件加载为一个循环设备：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">losetup -f --show /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<p>这将返回一个循环设备名称，例如 <code>/dev/loop0</code>。</p>
+<h3 id="调整-NTFS-分区大小"><a href="#调整-NTFS-分区大小" class="headerlink" title="调整 NTFS 分区大小"></a>调整 NTFS 分区大小</h3><p>由于 <code>.img</code> 文件包含的是 NTFS 文件系统，我们需要使用 <code>ntfsresize</code> 来调整文件系统的大小。在此之前，请确保安装了 <code>ntfs-3g</code> 工具包，它包含了 <code>ntfsresize</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum install ntfs-3g -y<br></code></pre></td></tr></table></figure>
+
+<h4 id="检查文件系统的一致性"><a href="#检查文件系统的一致性" class="headerlink" title="检查文件系统的一致性"></a>检查文件系统的一致性</h4><p>在调整大小之前，建议先检查文件系统的完整性：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ntfsfix /dev/loop0<br></code></pre></td></tr></table></figure>
+
+<p>虽然 <code>ntfsfix</code> 主要用于修复NTFS文件系统中的错误，但在某些情况下，它也能帮助确保文件系统处于良好的状态以便进行调整。</p>
+<h4 id="调整文件系统大小"><a href="#调整文件系统大小" class="headerlink" title="调整文件系统大小"></a>调整文件系统大小</h4><p>现在可以使用 <code>ntfsresize</code> 来调整文件系统的大小。请注意，<code>ntfsresize</code> 不会自动调整分区表，因此我们只需关注文件系统本身：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ntfsresize -i /dev/loop0   <span class="hljs-comment"># 查看当前文件系统信息</span><br>ntfsresize --force /dev/loop0   <span class="hljs-comment"># 调整文件系统以占用所有可用空间</span><br></code></pre></td></tr></table></figure>
+
+<p>注意：<code>ntfsresize</code> 在执行操作前会进行一次模拟运行并询问是否继续，使用 <code>--force</code> 参数可以直接执行调整，但请谨慎使用。</p>
+<h3 id="更新-iSCSI-Target-配置"><a href="#更新-iSCSI-Target-配置" class="headerlink" title="更新 iSCSI Target 配置"></a>更新 iSCSI Target 配置</h3><p>理论上，在扩展 <code>.img</code> 文件和调整文件系统大小后，iSCSI Target 应该已经能够识别新的容量。但是，为了确保客户端能看到全部可用空间，可能需要在客户端上重新扫描或重新连接 iSCSI Target。</p>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h3><blockquote>
 <p>[!NOTE]</p>
 <p>以上步骤详细描述了如何在 Linux (NAS)上安装docker部署 iSCSI Target。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
-<p>邮箱:<a href="mailto:&#x64;&#x75;&#116;&#x79;&#x63;&#46;&#x73;&#x74;&#x75;&#100;&#x69;&#111;&#64;&#x71;&#x71;&#x2e;&#x63;&#x6f;&#x6d;">&#x64;&#x75;&#116;&#x79;&#x63;&#46;&#x73;&#x74;&#x75;&#100;&#x69;&#111;&#64;&#x71;&#x71;&#x2e;&#x63;&#x6f;&#x6d;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+<p>邮箱:<a href="mailto:&#x64;&#x75;&#116;&#x79;&#x63;&#x2e;&#x73;&#116;&#x75;&#x64;&#x69;&#x6f;&#x40;&#x71;&#x71;&#46;&#x63;&#111;&#109;">&#x64;&#x75;&#116;&#x79;&#x63;&#x2e;&#x73;&#116;&#x75;&#x64;&#x69;&#x6f;&#x40;&#x71;&#x71;&#46;&#x63;&#111;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
 </blockquote>
 
                 
