@@ -15,23 +15,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="DUTYC Studio">
-  <meta name="keywords" content="">
+  <meta name="keywords" content="Linux,硬件,docker,服务器配置,技术支持,随笔,IT,运维,技术笔记">
   
     <meta name="description" content="本期作者:persistence [事件经过]一天，当我和往常一样打开主力机，准备启动游戏好好放松一下，没想到电脑开机在加载页面整整转了十分钟的圈圈。  【注意】 我的电脑配置并不低，为R5 5500＋RX5600XT，并且搭配致钛 TiPlus5000 512GB版本作为系统盘和游戏盘，同时又接了两块希捷酷鱼2T机械硬盘，机箱风道良好，不存在积热问题。  而且，在进入系统后，桌面图标一片空白，系">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[已解决]关于硬盘损坏导致的开机异常缓慢问题">
-<meta property="og:url" content="http://example.com/2025/01/26/%E5%B7%B2%E8%A7%A3%E5%86%B3-%E5%85%B3%E4%BA%8E%E7%A1%AC%E7%9B%98%E6%8D%9F%E5%9D%8F%E5%AF%BC%E8%87%B4%E7%9A%84%E5%BC%80%E6%9C%BA%E5%BC%82%E5%B8%B8%E7%BC%93%E6%85%A2%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:url" content="http://blog.dutyc.top/2025/01/26/%E5%B7%B2%E8%A7%A3%E5%86%B3-%E5%85%B3%E4%BA%8E%E7%A1%AC%E7%9B%98%E6%8D%9F%E5%9D%8F%E5%AF%BC%E8%87%B4%E7%9A%84%E5%BC%80%E6%9C%BA%E5%BC%82%E5%B8%B8%E7%BC%93%E6%85%A2%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="DUTYC博客">
 <meta property="og:description" content="本期作者:persistence [事件经过]一天，当我和往常一样打开主力机，准备启动游戏好好放松一下，没想到电脑开机在加载页面整整转了十分钟的圈圈。  【注意】 我的电脑配置并不低，为R5 5500＋RX5600XT，并且搭配致钛 TiPlus5000 512GB版本作为系统盘和游戏盘，同时又接了两块希捷酷鱼2T机械硬盘，机箱风道良好，不存在积热问题。  而且，在进入系统后，桌面图标一片空白，系">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-01-25T16:44:23.000Z">
-<meta property="article:modified_time" content="2025-02-08T09:38:44.037Z">
+<meta property="article:modified_time" content="2025-04-04T06:12:56.824Z">
 <meta property="article:author" content="DUTYC Studio">
 <meta property="article:tag" content="电脑故障">
 <meta name="twitter:card" content="summary_large_image">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>[已解决]关于硬盘损坏导致的开机异常缓慢问题 - DUTYC博客</title>
@@ -72,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"blog.dutyc.top","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -82,6 +86,17 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
+
+  
+
+  
+
+  
+
+  
+
+  
+
 
 
   
@@ -223,7 +238,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          660 字
+          650 字
         
       </span>
     
@@ -287,7 +302,7 @@
 <p>我立刻把这个主力机的硬盘装到笔记本上，可以正常进入系统并且速度正常。</p>
 <h2 id="故障分析"><a href="#故障分析" class="headerlink" title="[故障分析]"></a>[故障分析]</h2><p>既然只在主力机上出现这个问题，并且能够复现，问题就好办了。</p>
 <p>首先，我排除了系统盘的问题，因为硬盘换到笔记本上游戏可以正常运行；随后，我决定拔掉剩下的两块机械硬盘，只插入一块系统盘看看能不能进入系统（当时可能已经急眼了，所以才做出这样的决定）。</p>
-<h3 id="就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！"><a href="#就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！" class="headerlink" title="就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！"></a>就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！</h3><p>这一发现让人顿时摸不着头脑，明明之前不能开机，现在就能正常进入。思考了一会儿（因为当时让人脑袋转不过来），于是决定插入两块机械硬盘。当然，又卡在系统加载动画。我当时就觉得可能是机械硬盘的问题了，就把两块机械硬盘依次与主板连接，在我连接上第二块机械硬盘时，故障就复现了，那么问题现在已经非常明确了。</p>
+<h3 id="就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！"><a href="#就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！" class="headerlink" title="就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！"></a>就这样，我只插入了一块系统盘，奇迹发生了，电脑正常进入了系统，并且游戏运行正常！</h3><p>这一发现让人顿时摸不着头脑，明明之前不能开机，现在就能正常进入。思考了一会儿，于是决定再次插入两块机械硬盘。当然，又卡在系统加载动画。我当时就觉得可能是机械硬盘的问题了，就把两块机械硬盘依次与主板连接，在我连接上第二块机械硬盘时，故障就复现了，那么问题现在已经非常明确了。</p>
 <p>经过一系列排查，最终发现问题出在其中一块机械硬盘上。这块硬盘出现了大面积坏道，导致系统在读取数据时出现严重延迟甚至无法正确识别硬盘，从而引发了系统长时间卡顿的问题。</p>
 
                 
@@ -314,7 +329,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>[已解决]关于硬盘损坏导致的开机异常缓慢问题</div>
-      <div>http://example.com/2025/01/26/已解决-关于硬盘损坏导致的开机异常缓慢问题/</div>
+      <div>http://blog.dutyc.top/2025/01/26/已解决-关于硬盘损坏导致的开机异常缓慢问题/</div>
     </div>
     <div class="license-meta">
       
@@ -485,6 +500,32 @@
     </div>
   
   
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
   
 </div>
 
@@ -629,6 +670,8 @@
   <script>Fluid.plugins.imageCaption();</script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

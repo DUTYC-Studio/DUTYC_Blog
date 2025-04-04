@@ -15,26 +15,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="DUTYC Studio">
-  <meta name="keywords" content="">
+  <meta name="keywords" content="Linux,硬件,docker,服务器配置,技术支持,随笔,IT,运维,技术笔记">
   
     <meta name="description" content="iSCSI 部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能本指南包括所需软件的安装步骤。这个指南涵盖了从安装必要的软件包到配置 iSCSI Target 并在客户端挂载使用的基本流程 前言: [!NOTE] 为解决电脑空间不足且程序、游戏无法安装到smb共享的网络硬盘的问题，可通过iSCSI协议挂载NAS存储空间，使电脑将其识别为本地硬盘，实际使用上与物理硬盘一致  1. 安装必要的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘">
-<meta property="og:url" content="http://example.com/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/index.html">
+<meta property="og:url" content="http://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/index.html">
 <meta property="og:site_name" content="DUTYC博客">
 <meta property="og:description" content="iSCSI 部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能本指南包括所需软件的安装步骤。这个指南涵盖了从安装必要的软件包到配置 iSCSI Target 并在客户端挂载使用的基本流程 前言: [!NOTE] 为解决电脑空间不足且程序、游戏无法安装到smb共享的网络硬盘的问题，可通过iSCSI协议挂载NAS存储空间，使电脑将其识别为本地硬盘，实际使用上与物理硬盘一致  1. 安装必要的">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/QQ20250213.png">
+<meta property="og:image" content="http://blog.dutyc.top/img/QQ20250213.png">
 <meta property="article:published_time" content="2025-02-13T08:25:04.000Z">
 <meta property="article:modified_time" content="2025-03-23T06:55:56.599Z">
 <meta property="article:author" content="DUTYC Studio">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="NAS">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/QQ20250213.png">
+<meta name="twitter:image" content="http://blog.dutyc.top/img/QQ20250213.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</title>
@@ -75,7 +79,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"blog.dutyc.top","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -85,6 +89,17 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
+
+  
+
+  
+
+  
+
+  
+
+  
+
 
 
   
@@ -448,7 +463,7 @@
 <h3 id="7-总结"><a href="#7-总结" class="headerlink" title="7.总结"></a>7.总结</h3><blockquote>
 <p>[!NOTE]</p>
 <p>以上步骤详细描述了如何在 Linux 服务器上安装必要的软件、配置 iSCSI Target、以及如何在客户端挂载和使用该 Target。同时也包含了如何在服务端查看通过 iSCSI 挂载的卷中的文件。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
-<p>邮箱:<a href="mailto:&#100;&#117;&#x74;&#121;&#x63;&#x2e;&#x73;&#x74;&#x75;&#x64;&#105;&#x6f;&#64;&#113;&#113;&#x2e;&#99;&#x6f;&#x6d;">&#100;&#117;&#x74;&#121;&#x63;&#x2e;&#x73;&#x74;&#x75;&#x64;&#105;&#x6f;&#64;&#113;&#113;&#x2e;&#99;&#x6f;&#x6d;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+<p>邮箱:<a href="mailto:&#100;&#117;&#116;&#121;&#99;&#x2e;&#115;&#116;&#117;&#x64;&#x69;&#x6f;&#64;&#x71;&#x71;&#x2e;&#x63;&#111;&#109;">&#100;&#117;&#116;&#121;&#99;&#x2e;&#115;&#116;&#117;&#x64;&#x69;&#x6f;&#64;&#x71;&#x71;&#x2e;&#x63;&#111;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
 </blockquote>
 
                 
@@ -477,7 +492,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘</div>
-      <div>http://example.com/2025/02/13/P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘/</div>
+      <div>http://blog.dutyc.top/2025/02/13/P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘/</div>
     </div>
     <div class="license-meta">
       
@@ -648,6 +663,32 @@
     </div>
   
   
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
   
 </div>
 
@@ -792,6 +833,8 @@
   <script>Fluid.plugins.imageCaption();</script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

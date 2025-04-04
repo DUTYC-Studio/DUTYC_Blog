@@ -15,14 +15,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="DUTYC Studio">
-  <meta name="keywords" content="">
+  <meta name="keywords" content="Linux,硬件,docker,服务器配置,技术支持,随笔,IT,运维,技术笔记">
   
     <meta name="description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="P2[向NAS借一点空间]_iSCSI配置之Docker一键部署">
-<meta property="og:url" content="http://example.com/2025/02/15/P2-iSCSI%E9%85%8D%E7%BD%AE%E4%B9%8BDocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:url" content="http://blog.dutyc.top/2025/02/15/P2-iSCSI%E9%85%8D%E7%BD%AE%E4%B9%8BDocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/index.html">
 <meta property="og:site_name" content="DUTYC博客">
 <meta property="og:description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
 <meta property="og:locale" content="zh_CN">
@@ -34,6 +36,8 @@
 <meta property="article:tag" content="Docker">
 <meta name="twitter:card" content="summary_large_image">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>P2[向NAS借一点空间]_iSCSI配置之Docker一键部署 - DUTYC博客</title>
@@ -74,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"blog.dutyc.top","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -84,6 +88,17 @@
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
   
+
+  
+
+  
+
+  
+
+  
+
+  
+
 
 
   
@@ -280,7 +295,7 @@
                 
                 <h1 id="P2-iSCSI配置之Docker一键部署"><a href="#P2-iSCSI配置之Docker一键部署" class="headerlink" title="P2_iSCSI配置之Docker一键部署"></a>P2_iSCSI配置之Docker一键部署</h1><blockquote>
 <p>[!NOTE]</p>
-<p>书接上回  <a target="_blank" rel="noopener" href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44486757/article/details/126694464?spm=5176.28103460.0.0.297c5d27OF8hTd">Docker实战-ISCSI_docker iscsi-CSDN博客</a></p>
+<p>书接上回  <a href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44486757/article/details/126694464?spm=5176.28103460.0.0.297c5d27OF8hTd">Docker实战-ISCSI_docker iscsi-CSDN博客</a></p>
 </blockquote>
 <h3 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1.环境准备"></a>1.环境准备</h3><h4 id="1-1安装docker"><a href="#1-1安装docker" class="headerlink" title="1.1安装docker"></a>1.1安装docker</h4><ul>
 <li>更新系统软件包</li>
@@ -388,7 +403,7 @@
 <li><p><strong>验证连接</strong>：确保可以读写数据到新挂载的卷。</p>
 </li>
 </ul>
-<h3 id="4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件"><a href="#4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件" class="headerlink" title="4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件"></a>4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件</h3><p>参考 <a target="_blank" rel="noopener" href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> 第5章节</p>
+<h3 id="4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件"><a href="#4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件" class="headerlink" title="4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件"></a>4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件</h3><p>参考 <a href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> 第5章节</p>
 <h3 id="5-后期调整-img文件的大小"><a href="#5-后期调整-img文件的大小" class="headerlink" title="5.后期调整.img文件的大小"></a>5.后期调整.img文件的大小</h3><blockquote>
 <p>[!IMPORTANT]</p>
 <p>最好在一个非生产环境中测试整个过程，以避免意外的数据丢失或其他问题。</p>
@@ -418,7 +433,7 @@
 <h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h3><blockquote>
 <p>[!NOTE]</p>
 <p>以上步骤详细描述了如何在 Linux (NAS)上安装docker部署 iSCSI Target。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
-<p>邮箱:<a href="mailto:&#100;&#x75;&#116;&#121;&#99;&#46;&#x73;&#x74;&#117;&#100;&#105;&#111;&#x40;&#113;&#x71;&#x2e;&#99;&#x6f;&#x6d;">&#100;&#x75;&#116;&#121;&#99;&#46;&#x73;&#x74;&#117;&#100;&#105;&#111;&#x40;&#113;&#x71;&#x2e;&#99;&#x6f;&#x6d;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+<p>邮箱:<a href="mailto:&#x64;&#117;&#x74;&#121;&#99;&#46;&#115;&#116;&#117;&#100;&#105;&#111;&#x40;&#113;&#113;&#46;&#x63;&#111;&#109;">&#x64;&#117;&#x74;&#121;&#99;&#46;&#115;&#116;&#117;&#100;&#105;&#111;&#x40;&#113;&#113;&#46;&#x63;&#111;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
 </blockquote>
 
                 
@@ -449,7 +464,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>P2[向NAS借一点空间]_iSCSI配置之Docker一键部署</div>
-      <div>http://example.com/2025/02/15/P2-iSCSI配置之Docker一键部署/</div>
+      <div>http://blog.dutyc.top/2025/02/15/P2-iSCSI配置之Docker一键部署/</div>
     </div>
     <div class="license-meta">
       
@@ -620,6 +635,32 @@
     </div>
   
   
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
   
 </div>
 
@@ -764,6 +805,8 @@
   <script>Fluid.plugins.imageCaption();</script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 
