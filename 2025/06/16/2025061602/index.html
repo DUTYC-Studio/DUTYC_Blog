@@ -21,17 +21,17 @@
   <meta name="author" content="DUTYC Studio">
   <meta name="keywords" content="Linux,硬件,docker,服务器配置,技术支持,随笔,IT,运维,技术笔记">
   
-    <meta name="description" content="目录 背景与方案选择   方案一：使用 MCSM 面板的 Docker 容器部署   优势   架构概述   部署步骤   1. 安装 MCSM 面板和 Docker   2. 创建潜渊症服务器实例   3. 实现高可用性   4. 内网穿透与公网访问     方案二：Docker Compose + Dockerfile 部署（K8S）   常见问题与解决方案   总结与最佳实践建议   背景与">
+    <meta name="description" content="目录 背景与方案选择   方案一：使用 MCSM 面板的 Docker 容器部署   优势   架构概述   部署步骤   1. 安装 MCSM 面板和 Docker   2. 创建潜渊症服务器实例   3. 实现高可用性   4. 内网穿透与公网访问     方案二：Docker Compose + Dockerfile 部署（K8S）   常见问题与解决方案   总结与最佳实践建议   当前方">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux 下 Barotrauma（潜渊症）服务器的高可用部署方案">
 <meta property="og:url" content="http://blog.dutyc.top/2025/06/16/2025061602/index.html">
 <meta property="og:site_name" content="DUTYC博客">
-<meta property="og:description" content="目录 背景与方案选择   方案一：使用 MCSM 面板的 Docker 容器部署   优势   架构概述   部署步骤   1. 安装 MCSM 面板和 Docker   2. 创建潜渊症服务器实例   3. 实现高可用性   4. 内网穿透与公网访问     方案二：Docker Compose + Dockerfile 部署（K8S）   常见问题与解决方案   总结与最佳实践建议   背景与">
+<meta property="og:description" content="目录 背景与方案选择   方案一：使用 MCSM 面板的 Docker 容器部署   优势   架构概述   部署步骤   1. 安装 MCSM 面板和 Docker   2. 创建潜渊症服务器实例   3. 实现高可用性   4. 内网穿透与公网访问     方案二：Docker Compose + Dockerfile 部署（K8S）   常见问题与解决方案   总结与最佳实践建议   当前方">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://blog.dutyc.top/img/QQ20250616-1146321.png">
 <meta property="og:image" content="http://blog.dutyc.top/img/QQ20250616-124741.png">
 <meta property="article:published_time" content="2025-06-16T05:07:41.000Z">
-<meta property="article:modified_time" content="2025-06-16T05:26:19.967Z">
+<meta property="article:modified_time" content="2025-06-16T06:08:08.308Z">
 <meta property="article:author" content="DUTYC Studio">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="Docker">
@@ -246,7 +246,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.5k 字
+          1.7k 字
         
       </span>
     
@@ -257,7 +257,7 @@
         
         
         
-          13 分钟
+          15 分钟
         
       </span>
     
@@ -318,6 +318,18 @@
 <li><a href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E5%BB%BA%E8%AE%AE">总结与最佳实践建议</a></li>
 </ol>
 <hr>
+<h2 id="当前方案的高可用性定位"><a href="#当前方案的高可用性定位" class="headerlink" title="当前方案的高可用性定位"></a><strong>当前方案的高可用性定位</strong></h2><p>当前方案基于 <strong>MCSM 面板 + Docker 容器</strong> 实现了基础层面的容错能力，适用于个人玩家或小型团队的轻量级部署需求。其核心高可用性设计包括：</p>
+<ol>
+<li><strong>容器自动重启</strong> ：通过 MCSM 面板配置的「自动重启」策略，实现服务崩溃后的快速恢复。</li>
+<li><strong>数据持久化</strong> ：通过 Volume 挂载 <code>/home/mcsm/barot_server</code> 目录，保障配置文件与存档数据不丢失。</li>
+<li><strong>基础健康检查</strong> ：手动执行 <code>nc -uvz</code> 检查 UDP 端口状态，辅助判断服务存活。</li>
+</ol>
+<p><strong>适用场景</strong> ：</p>
+<ul>
+<li>个人玩家开服娱乐</li>
+<li>小型社区（10人以下）稳定运行</li>
+<li>技术门槛较低的快速部署</li>
+</ul>
 <h2 id="背景与方案选择"><a href="#背景与方案选择" class="headerlink" title="背景与方案选择"></a>背景与方案选择</h2><p>近期，我的《潜渊症》网友们反馈游戏自带的 P2P 联机存在较高延迟，计划单独购置一台服务器，安装 Windows 系统、注册 Steam 账号并重新购买游戏。我认为这一方案过于冗余——我们现有的 主机上运行的 Ubuntu 系统已足够服务器部署。</p>
 <p>本文将详细介绍如何在 Linux 系统上实现潜渊症（Barotrauma）服务器的高可用部署，涵盖以下两种主流方案：  </p>
 <ol>
