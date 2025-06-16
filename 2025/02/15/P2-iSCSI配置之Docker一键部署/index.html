@@ -1,0 +1,830 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/dutyc.ico">
+  <link rel="icon" href="/img/dutyc.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="DUTYC Studio">
+  <meta name="keywords" content="Linux,硬件,docker,服务器配置,技术支持,随笔,IT,运维,技术笔记">
+  
+    <meta name="description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="P2[向NAS借一点空间]_iSCSI配置之Docker一键部署">
+<meta property="og:url" content="http://blog.dutyc.top/2025/02/15/P2-iSCSI%E9%85%8D%E7%BD%AE%E4%B9%8BDocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:site_name" content="DUTYC博客">
+<meta property="og:description" content="P2_iSCSI配置之Docker一键部署 [!NOTE] 书接上回  P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客 ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自Docker实战-ISCSI_docker iscsi-CSDN博客  1.环境准备1.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-02-15T04:25:45.000Z">
+<meta property="article:modified_time" content="2025-06-16T02:36:29.742Z">
+<meta property="article:author" content="DUTYC Studio">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="NAS">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>P2[向NAS借一点空间]_iSCSI配置之Docker一键部署 - DUTYC博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.dutyc.top","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>DUTYC博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="P2[向NAS借一点空间]_iSCSI配置之Docker一键部署"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-02-15 12:25" pubdate>
+          2025年2月15日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">P2[向NAS借一点空间]_iSCSI配置之Docker一键部署</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="P2-iSCSI配置之Docker一键部署"><a href="#P2-iSCSI配置之Docker一键部署" class="headerlink" title="P2_iSCSI配置之Docker一键部署"></a>P2_iSCSI配置之Docker一键部署</h1><blockquote>
+<p>[!NOTE]</p>
+<p>书接上回  <a href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> ,在本地宿主机部署了iSCSI服务,但是配置过程过于繁琐,且对生产环境来讲有比较大的风险,这一次我们使用docker容器来部署,减轻工作量.部分教程参考自<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44486757/article/details/126694464?spm=5176.28103460.0.0.297c5d27OF8hTd">Docker实战-ISCSI_docker iscsi-CSDN博客</a></p>
+</blockquote>
+<h3 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1.环境准备"></a>1.环境准备</h3><h4 id="1-1安装docker"><a href="#1-1安装docker" class="headerlink" title="1.1安装docker"></a>1.1安装docker</h4><ul>
+<li>更新系统软件包</li>
+</ul>
+<p>首先，确保你的系统软件包是最新的。打开终端并运行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> yum update -y<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>设置 Docker 的仓库</li>
+</ul>
+<p>在安装新版本的 Docker 之前，需要设置 Docker 的官方稳定仓库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 安装一些必要的包，使得 yum 可以使用基于 HTTPS 的仓库</span><br><span class="hljs-built_in">sudo</span> yum install -y yum-utils<br><br><span class="hljs-comment"># 设置 Docker 的稳定版仓库</span><br><span class="hljs-built_in">sudo</span> yum-config-manager \<br>    --add-repo \<br>    https://download.docker.com/linux/centos/docker-ce.repo<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>安装 Docker 引擎</li>
+</ul>
+<p>现在你可以从设置好的稳定仓库中安装最新版本的 Docker 引擎了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> yum install docker-ce docker-ce-cli containerd.io<br></code></pre></td></tr></table></figure>
+
+<p>如果有多个 Docker 版本可用，你也可以通过指定确切的版本号来安装特定版本的 Docker：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 列出可用的 Docker 版本</span><br>yum list docker-ce --showduplicates | <span class="hljs-built_in">sort</span> -r<br><br><span class="hljs-comment"># 使用版本号替换 &lt;VERSION_STRING&gt; 来安装特定版本</span><br><span class="hljs-built_in">sudo</span> yum install docker-ce-&lt;VERSION_STRING&gt; docker-ce-cli-&lt;VERSION_STRING&gt; containerd.io<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>配置Docker 使用加速器镜像源</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> /etc/docker/<br>vim /etc/docker/daemon.json<br></code></pre></td></tr></table></figure>
+
+<p>​        添加镜像加速地址,注意镜像加速地址可能会失效,测试地址有效后再配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">&#123;<br>    <span class="hljs-string">&quot;registry-mirrors&quot;</span>: [<br>        <span class="hljs-string">&quot;https://docker.xuanyuan.me&quot;</span><br>    ]<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>​       重新加载docker服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl daemon-reload<br><span class="hljs-built_in">sudo</span> systemctl restart docker<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>启动 Docker 并设置开机自启</li>
+</ul>
+<p>安装完成后，启动 Docker，并将其配置为随系统启动。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl start docker<br><span class="hljs-built_in">sudo</span> systemctl <span class="hljs-built_in">enable</span> docker<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>确认Docker组件已经启动：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ps aux | grep docker<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-部署iSCSI-docker服务端"><a href="#2-部署iSCSI-docker服务端" class="headerlink" title="2.部署iSCSI  docker服务端"></a>2.部署iSCSI  docker服务端</h3><ul>
+<li>下载iSCSI Docker镜像：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull wtnb75/stgt<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>运行iSCSI容器： 下面的命令将启动一个名为<code>stgt</code>的容器，该容器会作为iSCSI服务端运行，并映射端口3260以允许客户端连接。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run \<br>  --restart unless-stopped<br>  --detach \<br>  --name stgt \<br>  --restart unless-stopped \<br>  --net host \<br>  --privileged \<br>  --volume /etc/target:/etc/target \<br>  --volume /run/lvm:/run/lvm \<br>  --volume /lib/modules:/lib/modules \<br>  --volume /sys/kernel/config:/sys/kernel/config \<br>  --volume /dev:/dev \<br>  --volume /vol2/1000/iscsi_img:/vol2/1000/iscsi_img(使用自己的img镜像所在的文件目录,并非.img文件的路径) \ <br>wtnb75/stgt<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>创建Target：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode target --op new --tid 1 --targetname iqn.2025-02.com.comsys:iscsi.fcdisk(名字自己定)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>创建LUN</strong>（这里假设你有一个硬盘镜像文件<code>/vol2/1000/iscsi_img/storage.img</code>,或者一个硬盘分区）：</li>
+</ul>
+<h6 id="方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd或者truncate命令创建一个："><a href="#方式一-使用-img硬盘镜像文件创建-如果没有现成的镜像文件，可以先通过dd或者truncate命令创建一个：" class="headerlink" title="方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过dd或者truncate命令创建一个："></a>方式一:  使用.img硬盘镜像文件创建,如果没有现成的镜像文件，可以先通过<code>dd</code>或者<code>truncate</code>命令创建一个：</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#使用dd命令创建</span><br><span class="hljs-built_in">dd</span> <span class="hljs-keyword">if</span>=/dev/zero of=/vol2/1000/iscsi_img/storage.img bs=1M count=1024   <span class="hljs-comment"># 创建一个1GB大小的镜像文件,记得使用自己的路径</span><br><span class="hljs-comment">#或者使用truncate 命令,truncate 命令不会立即分配实际的磁盘空间，而是通过稀疏文件的方式标记文件大小，这意味着文件的实际占用空间会随着数据写入而逐渐增加</span><br><span class="hljs-built_in">truncate</span> -s 2G /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#创建LUN</span><br>docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>[!NOTE]</p>
+<p>可以后期增加 <code>.img</code> 文件的大小,详情请见文章末尾</p>
+</blockquote>
+<h6 id="方式二-使用硬盘分区创建-分区为-dev-adb1-请根据实际情况调整"><a href="#方式二-使用硬盘分区创建-分区为-dev-adb1-请根据实际情况调整" class="headerlink" title="方式二:  使用硬盘分区创建,分区为/dev/adb1,请根据实际情况调整"></a>方式二:  使用硬盘分区创建,分区为<code>/dev/adb1</code>,请根据实际情况调整</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"> <span class="hljs-comment"># 注意ISCSI通过提供块设备（例如硬盘或分区）的方式进行工作,不能直接共享一个文件系统目录</span><br>docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode logicalunit --op new --tid 1 --lun 1 --backing-store /dev/sdb1<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>授权： 允许特定网段内的客户端访问iSCSI Target。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode target --op <span class="hljs-built_in">bind</span> --tid 1 --initiator-address 192.168.0.105   <span class="hljs-comment">#(客户端IP)</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>查看已定义的信息：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode target --op show<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>输出如下:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs bash">[root@learn 1000]# docker <span class="hljs-built_in">exec</span> stgt tgtadm --mode target --op show<br>Target 1: iqn.2017-04.com.comsys:iscsi.fcdisk<br>    System information:<br>        Driver: iscsi<br>        State: ready<br>    I_T nexus information:<br>    LUN information:<br>        LUN: 0<br>            Type: controller<br>            SCSI ID: IET     00010000<br>            SCSI SN: beaf10<br>            Size: 0 MB, Block size: 1<br>            Online: Yes<br>            Removable media: No<br>            Prevent removal: No<br>            Readonly: No<br>            SWP: No<br>            Thin-provisioning: No<br>            Backing store <span class="hljs-built_in">type</span>: null<br>            Backing store path: None<br>            Backing store flags: <br>        LUN: 1<br>            Type: disk<br>            SCSI ID: IET     00010001<br>            SCSI SN: beaf11<br>            Size: 2147 MB, Block size: 512<br>            Online: Yes<br>            Removable media: No<br>            Prevent removal: No<br>            Readonly: No<br>            SWP: No<br>            Thin-provisioning: No<br>            Backing store <span class="hljs-built_in">type</span>: rdwr<br>            Backing store path: /vol2/1000/iscsi_img/storage.img<br>            Backing store flags: <br>    Account information:<br>    ACL information:<br>        192.168.0.105<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>开放防火墙3260端口</li>
+</ul>
+<p>确保服务器上的防火墙允许iSCSI通信，默认情况下，iSCSI使用3260端口。可以暂时关闭防火墙</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#在CentOS/RHEL系统上： </span><br>systemctl stop firewalld<br></code></pre></td></tr></table></figure>
+
+<p>或者，只开放特定端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">firewall-cmd --zone=public --add-port=3260/tcp --permanent<br>firewall-cmd --reload<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-在客户端（如-Windows-11）挂载-iSCSI-Target"><a href="#3-在客户端（如-Windows-11）挂载-iSCSI-Target" class="headerlink" title="3. 在客户端（如 Windows 11）挂载 iSCSI Target"></a>3. 在客户端（如 Windows 11）挂载 iSCSI Target</h3><ul>
+<li><p><strong>在 Windows 中使用 iSCSI Initiator 连接到服务器上的 iSCSI Target</strong>。#具体参考csdn文章</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/beck_li/article/details/139669146">配置Windows客户端连接iSCSI设备_windows 连接iscsi-CSDN博客</a></p>
+</li>
+<li><p><strong>初始化并格式化磁盘</strong>（如果新添加）。</p>
+</li>
+<li><p><strong>验证连接</strong>：确保可以读写数据到新挂载的卷。</p>
+</li>
+</ul>
+<h3 id="4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件"><a href="#4-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件" class="headerlink" title="4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件"></a>4.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件</h3><p>参考 <a href="https://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/">P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</a> 第5章节</p>
+<h3 id="5-后期调整-img文件的大小"><a href="#5-后期调整-img文件的大小" class="headerlink" title="5.后期调整.img文件的大小"></a>5.后期调整.img文件的大小</h3><blockquote>
+<p>[!IMPORTANT]</p>
+<p>最好在一个非生产环境中测试整个过程，以避免意外的数据丢失或其他问题。</p>
+</blockquote>
+<h3 id="步骤-1-增加-img-文件的大小"><a href="#步骤-1-增加-img-文件的大小" class="headerlink" title="步骤 1: 增加 .img 文件的大小"></a>步骤 1: 增加 <code>.img</code> 文件的大小</h3><p>首先，增加 <code>.img</code> 文件的物理大小。假设想将其扩展到 50GB：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">truncate</span> -s 50G /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<p>或使用 <code>dd</code>（实际分配空间）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">dd</span> <span class="hljs-keyword">if</span>=/dev/zero bs=1M count=0 seek=50G of=/vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<h3 id="加载-img-文件为循环设备"><a href="#加载-img-文件为循环设备" class="headerlink" title="加载 .img 文件为循环设备"></a>加载 <code>.img</code> 文件为循环设备</h3><p>接下来，将 <code>.img</code> 文件加载为一个循环设备：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">losetup -f --show /vol2/1000/iscsi_img/storage.img<br></code></pre></td></tr></table></figure>
+
+<p>这将返回一个循环设备名称，例如 <code>/dev/loop0</code>。</p>
+<h3 id="调整-NTFS-分区大小"><a href="#调整-NTFS-分区大小" class="headerlink" title="调整 NTFS 分区大小"></a>调整 NTFS 分区大小</h3><p>由于 <code>.img</code> 文件包含的是 NTFS 文件系统，我们需要使用 <code>ntfsresize</code> 来调整文件系统的大小。在此之前，请确保安装了 <code>ntfs-3g</code> 工具包，它包含了 <code>ntfsresize</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum install ntfs-3g -y<br></code></pre></td></tr></table></figure>
+
+<h4 id="检查文件系统的一致性"><a href="#检查文件系统的一致性" class="headerlink" title="检查文件系统的一致性"></a>检查文件系统的一致性</h4><p>在调整大小之前，建议先检查文件系统的完整性：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ntfsfix /dev/loop0<br></code></pre></td></tr></table></figure>
+
+<p>虽然 <code>ntfsfix</code> 主要用于修复NTFS文件系统中的错误，但在某些情况下，它也能帮助确保文件系统处于良好的状态以便进行调整。</p>
+<h4 id="调整文件系统大小"><a href="#调整文件系统大小" class="headerlink" title="调整文件系统大小"></a>调整文件系统大小</h4><p>现在可以使用 <code>ntfsresize</code> 来调整文件系统的大小。请注意，<code>ntfsresize</code> 不会自动调整分区表，因此我们只需关注文件系统本身：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">ntfsresize -i /dev/loop0   <span class="hljs-comment"># 查看当前文件系统信息</span><br>ntfsresize --force /dev/loop0   <span class="hljs-comment"># 调整文件系统以占用所有可用空间</span><br></code></pre></td></tr></table></figure>
+
+<p>注意：<code>ntfsresize</code> 在执行操作前会进行一次模拟运行并询问是否继续，使用 <code>--force</code> 参数可以直接执行调整，但请谨慎使用。</p>
+<h3 id="更新-iSCSI-Target-配置"><a href="#更新-iSCSI-Target-配置" class="headerlink" title="更新 iSCSI Target 配置"></a>更新 iSCSI Target 配置</h3><p>理论上，在扩展 <code>.img</code> 文件和调整文件系统大小后，iSCSI Target 应该已经能够识别新的容量。但是，为了确保客户端能看到全部可用空间，可能需要在客户端上重新扫描或重新连接 iSCSI Target。</p>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h3><blockquote>
+<p>[!NOTE]</p>
+<p>以上步骤详细描述了如何在 Linux (NAS)上安装docker部署 iSCSI Target。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
+<p>邮箱:<a href="mailto:&#x64;&#117;&#x74;&#121;&#99;&#x2e;&#x73;&#x74;&#x75;&#x64;&#105;&#111;&#x40;&#113;&#x71;&#46;&#99;&#111;&#x6d;">&#x64;&#117;&#x74;&#121;&#99;&#x2e;&#x73;&#x74;&#x75;&#x64;&#105;&#111;&#x40;&#113;&#x71;&#46;&#99;&#111;&#x6d;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
+      
+        <a href="/tags/NAS/" class="print-no-link">#NAS</a>
+      
+        <a href="/tags/Docker/" class="print-no-link">#Docker</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>P2[向NAS借一点空间]_iSCSI配置之Docker一键部署</div>
+      <div>http://blog.dutyc.top/2025/02/15/P2-iSCSI配置之Docker一键部署/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>DUTYC Studio</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年2月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/03/16/2025032301/" title="IBM X3650 M4 服务器折腾日记：200元捡漏实战全记录">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">IBM X3650 M4 服务器折腾日记：200元捡漏实战全记录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/" title="P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘">
+                        <span class="hidden-mobile">P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/jquery.min.js%20/js/weixinqq-check.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

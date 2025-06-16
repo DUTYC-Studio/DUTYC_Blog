@@ -1,0 +1,858 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/dutyc.ico">
+  <link rel="icon" href="/img/dutyc.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="DUTYC Studio">
+  <meta name="keywords" content="Linux,硬件,docker,服务器配置,技术支持,随笔,IT,运维,技术笔记">
+  
+    <meta name="description" content="iSCSI 部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能本指南包括所需软件的安装步骤。这个指南涵盖了从安装必要的软件包到配置 iSCSI Target 并在客户端挂载使用的基本流程 前言: [!NOTE] 为解决电脑空间不足且程序、游戏无法安装到smb共享的网络硬盘的问题，可通过iSCSI协议挂载NAS存储空间，使电脑将其识别为本地硬盘，实际使用上与物理硬盘一致  1. 安装必要的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘">
+<meta property="og:url" content="http://blog.dutyc.top/2025/02/13/P1_%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AAiSCSI%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%8C%E5%B0%86NAS%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD%E6%88%90%E7%9C%9F%E6%AD%A3%E7%9A%84%E7%94%B5%E8%84%91%E7%A1%AC%E7%9B%98/index.html">
+<meta property="og:site_name" content="DUTYC博客">
+<meta property="og:description" content="iSCSI 部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能本指南包括所需软件的安装步骤。这个指南涵盖了从安装必要的软件包到配置 iSCSI Target 并在客户端挂载使用的基本流程 前言: [!NOTE] 为解决电脑空间不足且程序、游戏无法安装到smb共享的网络硬盘的问题，可通过iSCSI协议挂载NAS存储空间，使电脑将其识别为本地硬盘，实际使用上与物理硬盘一致  1. 安装必要的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.dutyc.top/img/QQ20250213.png">
+<meta property="article:published_time" content="2025-02-13T08:25:04.000Z">
+<meta property="article:modified_time" content="2025-03-23T06:55:56.599Z">
+<meta property="article:author" content="DUTYC Studio">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="NAS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://blog.dutyc.top/img/QQ20250213.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘 - DUTYC博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.dutyc.top","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>DUTYC博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-02-13 16:25" pubdate>
+          2025年2月13日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="iSCSI-部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能"><a href="#iSCSI-部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能" class="headerlink" title="iSCSI 部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能"></a>iSCSI 部署-将NAS空间变为本地磁盘，并拥有与实体硬盘所有常用功能</h1><p>本指南包括所需软件的安装步骤。这个指南涵盖了从安装必要的软件包到配置 iSCSI Target 并在客户端挂载使用的基本流程</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言:"></a>前言:</h2><blockquote>
+<p>[!NOTE]</p>
+<p>为解决电脑空间不足且程序、游戏无法安装到smb共享的网络硬盘的问题，可通过iSCSI协议挂载NAS存储空间，使电脑将其识别为本地硬盘，实际使用上与物理硬盘一致</p>
+</blockquote>
+<h3 id="1-安装必要的软件"><a href="#1-安装必要的软件" class="headerlink" title="1. 安装必要的软件"></a>1. 安装必要的软件</h3><p>服务端配置（Linux 系统）</p>
+<ul>
+<li><p><strong>安装 <code>targetcli</code> 和相关工具</strong>：</p>
+<ul>
+<li><p>对于基于 Red Hat 的系统（如 CentOS、RHEL、Fedora）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> yum install targetcli<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>对于基于 Debian 的系统（如 Ubuntu）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> apt-get update<br><span class="hljs-built_in">sudo</span> apt-get install targetcli-fb<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>安装 <code>ntfs-3g</code> 工具</strong>（用于挂载 NTFS 文件系统）：</p>
+<ul>
+<li><p>对于基于 Red Hat 的系统：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> yum install ntfs-3g<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>对于基于 Debian 的系统：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> apt-get install ntfs-3g<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>安装 <code>lsof</code> 和 <code>psmisc</code> 包</strong>（用于查找和终止占用文件系统的进程）：</p>
+<ul>
+<li><p>对于基于 Red Hat 的系统：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> yum install lsof psmisc<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>对于基于 Debian 的系统：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> apt-get install lsof psmisc<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="2-创建后端存储"><a href="#2-创建后端存储" class="headerlink" title="2. 创建后端存储"></a>2. 创建后端存储</h3><ul>
+<li><p>进入 <code>targetcli</code> shell：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> targetcli<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>创建文件IO存储对象</p>
+<p>（以&#x2F;home&#x2F;iscsi_disk.img 路径下的img镜像为例，大小为2GB）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">/&gt; <span class="hljs-built_in">cd</span> /backstores/fileio<br>/backstores/fileio&gt; create file_or_dev=/home/iscsi_disk.img name=my_iscsi_disk size=2G<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="3-配置-iSCSI-Target"><a href="#3-配置-iSCSI-Target" class="headerlink" title="3. 配置 iSCSI Target"></a>3. 配置 iSCSI Target</h3><ul>
+<li><p>创建一个新的 iSCSI Target</p>
+<p>（使用合适的 IQN，例如iqn.2025-02.com.example:server.target0）#名字而已,随意</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">/&gt; <span class="hljs-built_in">cd</span> /iscsi<br>/iscsi&gt; create iqn.2025-02.com.example:server.target0<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>进入新创建的 Target 的 TPG：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/iscsi&gt; <span class="hljs-built_in">cd</span> iqn.2025-02.com.example:server.target0/tpg1<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>添加 LUN</p>
+<p>（将之前创建的文件IO存储对象添加为 LUN）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/iscsi/iqn.20...rget0/tpg1&gt; luns/ create /backstores/fileio/my_iscsi_disk<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>配置访问控制（ACL）</p>
+<p>（根据需要设置客户端IQN）：Windows的ISCSI客户端中”配置”页面查看</p>
+<img src="/img/QQ20250213.png" srcset="/img/loading.gif" lazyload alt="QQ20250213" style="zoom:67%;" />
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/iscsi/iqn.20...rget0/tpg1&gt; acls/ create iqn.1991-05.com.microsoft:desktop-tcn6g45(换成自己的)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>禁用认证（如果适用）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/iscsi/iqn.20...rget0/tpg1&gt; <span class="hljs-built_in">set</span> attribute authentication=0<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>启用 TPG</p>
+<p>（通常默认已启用）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/iscsi/iqn.20...rget0/tpg1&gt; <span class="hljs-built_in">enable</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>保存配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">/&gt; <span class="hljs-built_in">cd</span> /<br>/&gt; saveconfig<br>/&gt; <span class="hljs-built_in">exit</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<p>请确保防火墙开放  3260  端口</p>
+</blockquote>
+<ul>
+<li><p>配置防火墙规则以允许3260开放</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs brainfuck"><span class="hljs-comment">sudo firewall</span><span class="hljs-literal">-</span><span class="hljs-comment">cmd</span> <span class="hljs-literal">--</span><span class="hljs-comment">zone=public</span> <span class="hljs-literal">--</span><span class="hljs-comment">add</span><span class="hljs-literal">-</span><span class="hljs-comment">port=3260/tcp</span> <span class="hljs-literal">--</span><span class="hljs-comment">permanent</span><br><span class="hljs-comment">sudo firewall</span><span class="hljs-literal">-</span><span class="hljs-comment">cmd</span> <span class="hljs-literal">--</span><span class="hljs-comment">reload</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<blockquote>
+<p>[!NOTE] </p>
+<h4 id="万不得已的情况下请使用此方法-彻底关闭防火墙-请勿在生产环境中使用此命令-适用于CentOS-7-或-RHEL-7-及其衍生版本"><a href="#万不得已的情况下请使用此方法-彻底关闭防火墙-请勿在生产环境中使用此命令-适用于CentOS-7-或-RHEL-7-及其衍生版本" class="headerlink" title="(万不得已的情况下请使用此方法)   彻底关闭防火墙(请勿在生产环境中使用此命令 ,适用于CentOS 7 或 RHEL 7 及其衍生版本)"></a><em><strong>(万不得已的情况下请使用此方法)</strong></em>   彻底关闭防火墙(请勿在生产环境中使用此命令 ,适用于CentOS 7 或 RHEL 7 及其衍生版本)</h4><ol>
+<li><p><strong>停止 <code>firewalld</code> 服务</strong>：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">sudo systemctl stop firewalld<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>禁用 <code>firewalld</code> 服务，使其不会在系统启动时自动启动</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl <span class="hljs-built_in">disable</span> firewalld<br></code></pre></td></tr></table></figure></li>
+</ol>
+</blockquote>
+<ul>
+<li>重新加载 LIO 服务配置</li>
+</ul>
+<ol>
+<li><p><strong>重启 LIO 服务</strong>： 如果需要应用新的配置或者重启 LIO 服务，可以使用以下命令：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs aspectj">sudo systemctl restart <span class="hljs-keyword">target</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>开机自启动 LIO 服务</strong>： 使用下面的命令确保 <code>target</code> 服务会在系统启动时自动运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl <span class="hljs-built_in">enable</span> target<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>检查 LIO 服务状态</strong>： 若要查看 <code>target</code> 服务的状态，可以使用：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs fortran">sudo systemctl <span class="hljs-keyword">status</span> <span class="hljs-keyword">target</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="4-在客户端（如-Windows-11）挂载-iSCSI-Target"><a href="#4-在客户端（如-Windows-11）挂载-iSCSI-Target" class="headerlink" title="4. 在客户端（如 Windows 11）挂载 iSCSI Target"></a>4. 在客户端（如 Windows 11）挂载 iSCSI Target</h3><ul>
+<li><p><strong>在 Windows 中使用 iSCSI Initiator 连接到服务器上的 iSCSI Target</strong>。#具体参考csdn文章</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/beck_li/article/details/139669146">配置Windows客户端连接iSCSI设备_windows 连接iscsi-CSDN博客</a></p>
+</li>
+<li><p><strong>初始化并格式化磁盘</strong>（如果新添加）。</p>
+</li>
+<li><p><strong>验证连接</strong>：确保可以读写数据到新挂载的卷。</p>
+</li>
+</ul>
+<h3 id="5-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件"><a href="#5-服务端查看通过iSCSI挂载到Windows-的磁盘上放入的文件" class="headerlink" title="5.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件"></a>5.服务端查看通过iSCSI挂载到Windows 的磁盘上放入的文件</h3><h4 id="使用-parted-查看分区信息"><a href="#使用-parted-查看分区信息" class="headerlink" title="使用 parted 查看分区信息"></a>使用 <code>parted</code> 查看分区信息</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> parted /home/iscsi_disk.img unit s <span class="hljs-built_in">print</span><br></code></pre></td></tr></table></figure>
+
+<p>命令输出如下:</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs fortran">[root@learn home]# sudo parted /home/iscsi_disk.img <span class="hljs-keyword">unit</span> s <span class="hljs-built_in">print</span><br><br>Model:  (<span class="hljs-keyword">file</span>)<br>Disk /home/iscsi_disk.img: <span class="hljs-number">4194304</span>s<br>Sector <span class="hljs-built_in">size</span> (<span class="hljs-keyword">logical</span>/physical): <span class="hljs-number">512</span>B/<span class="hljs-number">512</span>B<br>Partition Table: gpt<br>Disk Flags: <br><br><span class="hljs-keyword">Number</span>  Start   <span class="hljs-keyword">End</span>       <span class="hljs-built_in">Size</span>      <span class="hljs-keyword">File</span> system  <span class="hljs-keyword">Name</span>                          标志<br> <span class="hljs-number">1</span>      <span class="hljs-number">34</span>s     <span class="hljs-number">32767</span>s    <span class="hljs-number">32734</span>s                 Microsoft reserved partition  msftres<br> <span class="hljs-number">2</span>      <span class="hljs-number">32768</span>s  <span class="hljs-number">4190207</span>s  <span class="hljs-number">4157440</span>s  ntfs         Basic <span class="hljs-keyword">data</span> partition<br><br>[root@learn home]#<br></code></pre></td></tr></table></figure>
+
+<p>根据提供的 <code>parted</code> 输出，<code>/home/iscsi_disk.img</code> 文件包含两个分区：</p>
+<ol>
+<li><strong>Microsoft reserved partition</strong>（微软保留分区），从第34个扇区开始，到第32767个扇区结束。</li>
+<li><strong>Basic data partition</strong>（基本数据分区），从第32768个扇区开始，到第4190207个扇区结束，文件系统类型为 NTFS。</li>
+</ol>
+<p>为了在服务端查看第二个分区（即 NTFS 分区）中的文件内容，我们需要计算正确的偏移量，并使用该偏移量挂载这个分区。</p>
+<h4 id="确认分区偏移量"><a href="#确认分区偏移量" class="headerlink" title="确认分区偏移量"></a>确认分区偏移量</h4><p>确保使用的偏移量是正确的。根据 <code>parted</code> 的输出，第二个分区（NTFS 分区）从第 32768 扇区开始，每个扇区大小为 512 字节。因此，偏移量应为：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">偏移量 =<span class="hljs-number"> 32768 </span>*<span class="hljs-number"> 512 </span>=<span class="hljs-number"> 16777216 </span>字节<br></code></pre></td></tr></table></figure>
+
+<p>我们可以再次确认分区表和偏移量是否正确：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> parted /home/iscsi_disk.img unit s <span class="hljs-built_in">print</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="使用-losetup-并检查设备"><a href="#使用-losetup-并检查设备" class="headerlink" title="使用 losetup 并检查设备"></a>使用 <code>losetup</code> 并检查设备</h4></li>
+</ul>
+<p>首先，使用 <code>losetup</code> 将 <code>.img</code> 文件关联到一个循环设备，并列出所有循环设备以确认是否正确关联：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> losetup -P -f --show /home/iscsi_disk.img<br></code></pre></td></tr></table></figure>
+
+<p>这个命令会自动找到并分配一个空闲的循环设备，并且 <code>-P</code> 参数会自动扫描分区表并创建相应的设备节点（如 <code>/dev/loop0p1</code>, <code>/dev/loop0p2</code> 等）。</p>
+<p>然后，列出所有循环设备：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">lsblk</span><br></code></pre></td></tr></table></figure>
+
+<p>应该能看到类似 <code>/dev/loop0p1</code> 和 <code>/dev/loop0p2</code> 这样的设备节点。其中 <code>/dev/loop0p2</code> 应该对应于的 NTFS 分区。</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<p>NTFS 分区有时候会处于不安全的状态。具体来说，Windows 可能没有完全关闭该分区（例如通过快速启动或休眠功能），这导致了文件系统元数据仍然保存在 Windows 缓存中。因此，Linux 系统会拒绝以读写模式挂载该分区。所以要使用只读模式挂载</p>
+</blockquote>
+<h4 id="尝试只读挂载-方法二选一"><a href="#尝试只读挂载-方法二选一" class="headerlink" title="尝试只读挂载  (方法二选一)"></a><strong>尝试只读挂载</strong>  (方法二选一)</h4><p>如果你只是想查看文件而不需要修改它们，可以尝试以只读模式挂载：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> mount -o ro,loop,offset=16777216 /home/iscsi_disk.img /mnt<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><em>或者直接挂载已识别的分区：</em></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> mount -t ntfs-3g -o ro /dev/loop0p2 /mnt<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>完成后的清理工作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> umount /mnt<br><span class="hljs-built_in">sudo</span> losetup -d /dev/loop0<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="6-解决挂载点忙的问题"><a href="#6-解决挂载点忙的问题" class="headerlink" title="6. 解决挂载点忙的问题"></a>6. 解决挂载点忙的问题</h3><p>如果遇到挂载点忙的问题，可以使用以下命令查找并终止占用该挂载点的进程：</p>
+<ul>
+<li><p>查找占用 <code>/mnt</code> 的进程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> fuser -m /mnt<br><span class="hljs-built_in">sudo</span> lsof /mnt<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>终止相关进程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">kill</span> -9 PID<br></code></pre></td></tr></table></figure>
+
+<p>将PID替换为你找到的实际进程ID。</p>
+</li>
+</ul>
+<h3 id="7-总结"><a href="#7-总结" class="headerlink" title="7.总结"></a>7.总结</h3><blockquote>
+<p>[!NOTE]</p>
+<p>以上步骤详细描述了如何在 Linux 服务器上安装必要的软件、配置 iSCSI Target、以及如何在客户端挂载和使用该 Target。同时也包含了如何在服务端查看通过 iSCSI 挂载的卷中的文件。每个环境可能有其特定的需求或限制，请根据实际情况调整上述步骤; 如果有任何问题或需要进一步的帮助，请询问我们</p>
+<p>邮箱:<a href="mailto:&#100;&#117;&#116;&#121;&#99;&#x2e;&#115;&#116;&#117;&#x64;&#x69;&#x6f;&#64;&#x71;&#x71;&#x2e;&#x63;&#111;&#109;">&#100;&#117;&#116;&#121;&#99;&#x2e;&#115;&#116;&#117;&#x64;&#x69;&#x6f;&#64;&#x71;&#x71;&#x2e;&#x63;&#111;&#109;</a>     <a target="_blank" rel="noopener" href="https://github.com/dutyc">作者Github : Persistence</a>   </p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
+      
+        <a href="/tags/NAS/" class="print-no-link">#NAS</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>P1[向NAS借一点空间]_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘</div>
+      <div>http://blog.dutyc.top/2025/02/13/P1_部署一个iSCSI服务端，将NAS空间挂载成真正的电脑硬盘/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>DUTYC Studio</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年2月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/02/15/P2-iSCSI%E9%85%8D%E7%BD%AE%E4%B9%8BDocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/" title="P2[向NAS借一点空间]_iSCSI配置之Docker一键部署">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">P2[向NAS借一点空间]_iSCSI配置之Docker一键部署</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/01/26/%5B%E5%B7%B2%E8%A7%A3%E5%86%B3%5D%E7%94%B5%E8%84%91%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%EF%BC%8C%E6%89%8B%E6%9C%BA%E5%8D%B4%E8%83%BD%E6%AD%A3%E5%B8%B8%E4%B8%8A%E7%BD%91%EF%BC%9F%E7%94%B5%E4%BF%A1%E8%BF%90%E8%90%A5%E5%95%86%E9%99%90%E5%88%B6%E6%8F%AD%E7%A7%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E4%B9%8B%E9%81%93/" title="[已解决]电脑无法访问部分网站，手机却能正常上网？电信运营商限制揭秘及解决之道">
+                        <span class="hidden-mobile">[已解决]电脑无法访问部分网站，手机却能正常上网？电信运营商限制揭秘及解决之道</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/jquery.min.js%20/js/weixinqq-check.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
