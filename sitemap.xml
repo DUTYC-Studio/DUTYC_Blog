@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.dutyc.top/2025/07/19/2025071901/</loc>
+    
+    <lastmod>2025-07-19</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://blog.dutyc.top/2025/02/15/P2-iSCSI%E9%85%8D%E7%BD%AE%E4%B9%8BDocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</loc>
     
     <lastmod>2025-06-29</lastmod>
@@ -76,7 +85,7 @@
 
   <url>
     <loc>http://blog.dutyc.top/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -84,84 +93,91 @@
   
   <url>
     <loc>http://blog.dutyc.top/tags/Linux/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/PVE/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/ESXi/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/IBM-SystemX/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/%E8%BF%90%E7%BB%B4/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/Docker/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/K8S/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/%E9%AB%98%E5%8F%AF%E7%94%A8%E5%8C%96%E9%83%A8%E7%BD%B2/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/NAS/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://blog.dutyc.top/tags/%E7%94%B5%E8%84%91%E6%95%85%E9%9A%9C/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <loc>http://blog.dutyc.top/tags/%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D/</loc>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://blog.dutyc.top/tags/%E7%BD%91%E7%BB%9C%E9%97%AE%E9%A2%98/</loc>
-    <lastmod>2025-06-29</lastmod>
+    <lastmod>2025-07-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.dutyc.top/tags/%E7%94%B5%E8%84%91%E6%95%85%E9%9A%9C/</loc>
+    <lastmod>2025-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
